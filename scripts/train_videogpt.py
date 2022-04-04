@@ -15,7 +15,7 @@ def main():
     parser.add_argument('--sequence_length', type=int, default=16)
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--num_workers', type=int, default=8)
-    parser.add_argument('--pretrained', type=bool, required=True)
+    parser.add_argument('--pretrained', type=bool)
     args = parser.parse_args()
 
     data = VideoData(args)
@@ -26,6 +26,7 @@ def main():
     args.class_cond_dim = data.n_classes if args.class_cond else None
     if args.pretrained:
         model = load_videogpt('ucf101_uncond_gpt')
+        model.args = args
     else:
         model = VideoGPT(args)
 
