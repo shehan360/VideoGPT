@@ -15,7 +15,6 @@ def main():
     parser.add_argument('--sequence_length', type=int, default=16)
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--num_workers', type=int, default=8)
-    parser.add_argument('--pretrained', type=bool)
     parser.add_argument('--ckpt_path', type=str)
     args = parser.parse_args()
 
@@ -25,9 +24,10 @@ def main():
     data.test_dataloader()
 
     args.class_cond_dim = data.n_classes if args.class_cond else None
-    if args.pretrained:
-        model = load_videogpt('ucf101_uncond_gpt')
-        model.args = args
+
+    if args.ckpt_path:
+        print("Loading from checkpoint!!!")
+        model = VideoGPT.load_from_checkpoint(args.ckpt_path)
     else:
         model = VideoGPT(args)
 

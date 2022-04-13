@@ -22,7 +22,12 @@ def main():
     # pre-make relevant cached files if necessary
     data.train_dataloader()
     data.test_dataloader()
-    model = VQVAE(args)
+
+    if args.ckpt_path:
+        print("Loading from checkpoint!!!")
+        model = VQVAE.load_from_checkpoint(args.ckpt_path)
+    else:
+        model = VQVAE(args)
 
     callbacks = []
     callbacks.append(ModelCheckpoint(monitor='val/recon_loss', mode='min'))
