@@ -15,6 +15,7 @@ def main():
     parser.add_argument('--resolution', type=int, default=64)
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--num_workers', type=int, default=8)
+    parser.add_argument('--ckpt_path', type=str)
     args = parser.parse_args()
 
     data = VideoData(args)
