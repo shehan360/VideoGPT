@@ -68,7 +68,7 @@ class VideoDataset(data.Dataset):
 
         class_name = get_parent_dir(self._clips.video_paths[idx])
         label = self.class_to_label[class_name]
-        return dict(video=preprocess(video, resolution), label=label)
+        return dict(video=preprocess(video, resolution, sequence_length=16), label=label)
 
 
 def get_parent_dir(path):
@@ -83,7 +83,9 @@ def preprocess(video, resolution, sequence_length=None):
     # temporal crop
     if sequence_length is not None:
         assert sequence_length <= t
-        video = video[:sequence_length]
+
+        start_index = random.randint(0, t - sequence_length)
+        video = video[start_index:start_index + sequence_length]
 
     # scale shorter side to resolution
     scale = resolution / min(h, w)
@@ -180,7 +182,7 @@ class VideoData(pl.LightningDataModule):
 
     def _dataset(self, train):
         Dataset = VideoDataset if osp.isdir(self.args.data_path) else HDF5Dataset
-        dataset = Dataset(self.args.data_path, self.args.sequence_length,
+        dataset = Dataset(self.args.data_path, 120,
                           train=train, resolution=self.args.resolution)
         return dataset
 
