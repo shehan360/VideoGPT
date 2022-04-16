@@ -68,14 +68,14 @@ class VideoDataset(data.Dataset):
 
         class_name = get_parent_dir(self._clips.video_paths[idx])
         label = self.class_to_label[class_name]
-        return dict(video=preprocess(video, resolution, sequence_length=16), label=label)
+        return dict(video=preprocess(video, resolution, sequence_length=16, train=self.train), label=label)
 
 
 def get_parent_dir(path):
     return osp.basename(osp.dirname(path))
 
 
-def preprocess(video, resolution, sequence_length=None):
+def preprocess(video, resolution, sequence_length=None, train=False):
     # video: THWC, {0, ..., 255}
     video = video.permute(0, 3, 1, 2).float() / 255. # TCHW
     t, c, h, w = video.shape
@@ -83,9 +83,11 @@ def preprocess(video, resolution, sequence_length=None):
     # temporal crop
     if sequence_length is not None:
         assert sequence_length <= t
-
-        start_index = random.randint(0, t - sequence_length)
-        video = video[start_index:start_index + sequence_length]
+        if train:
+            start_index = random.randint(0, t - sequence_length)
+            video = video[start_index:start_index + sequence_length]
+        else:
+            video = video[:sequence_length]
 
     # scale shorter side to resolution
     scale = resolution / min(h, w)
