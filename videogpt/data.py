@@ -83,11 +83,9 @@ def preprocess(video, resolution, sequence_length=None, train=False):
     # temporal crop
     if sequence_length is not None:
         assert sequence_length <= t
-        if train:
-            start_index = random.randint(0, t - sequence_length)
-            video = video[start_index:start_index + sequence_length]
-        else:
-            video = video[:sequence_length]
+        start_index = random.randint(0, t - sequence_length)
+        video = video[start_index:start_index + sequence_length]
+
 
     # scale shorter side to resolution
     scale = resolution / min(h, w)
